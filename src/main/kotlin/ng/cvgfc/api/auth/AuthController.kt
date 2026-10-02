@@ -76,15 +76,18 @@ class AuthController(
             .build()
     }
 
-    private fun sessionCookie(value: String, maxAge: Duration): ResponseCookie {
-        val config = properties.auth
-        return ResponseCookie.from(config.cookieName, value)
-            .httpOnly(true)
-            .secure(config.cookieSecure)
-            .sameSite("Lax")
-            .path("/")
-            .maxAge(maxAge)
-            .apply { if (!config.cookieDomain.isNullOrBlank()) domain(config.cookieDomain) }
-            .build()
-    }
+    private fun sessionCookie(value: String, maxAge: Duration) = sessionCookie(properties, value, maxAge)
+}
+
+/** The HttpOnly session cookie the web apps use. */
+fun sessionCookie(properties: CvgProperties, value: String, maxAge: Duration): ResponseCookie {
+    val config = properties.auth
+    return ResponseCookie.from(config.cookieName, value)
+        .httpOnly(true)
+        .secure(config.cookieSecure)
+        .sameSite("Lax")
+        .path("/")
+        .maxAge(maxAge)
+        .apply { if (!config.cookieDomain.isNullOrBlank()) domain(config.cookieDomain) }
+        .build()
 }

@@ -31,7 +31,7 @@ class SecurityConfig(private val properties: CvgProperties) {
             .logout { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                it.requestMatchers("/api/auth/sign-in", "/actuator/health").permitAll()
+                it.requestMatchers("/api/auth/sign-in", "/api/onboarding/**", "/api/public/**", "/actuator/health").permitAll()
                 it.anyRequest().authenticated()
             }
             .exceptionHandling {

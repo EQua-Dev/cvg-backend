@@ -15,7 +15,19 @@ data class CvgProperties(
     val bootstrap: Bootstrap = Bootstrap(),
     val auth: Auth = Auth(),
     val cors: Cors = Cors(),
+    val links: Links = Links(),
+    val onboarding: Onboarding = Onboarding(),
 ) {
+    /** Public URLs of the front ends, used to build links we hand out (WhatsApp, QR codes). */
+    data class Links(
+        val clubApp: String = "http://localhost:3002",
+        val publicSite: String = "http://localhost:3000",
+        /** Signs ID-card QR links so member codes can't simply be enumerated. */
+        val verifySecret: String = "dev-only-change-me",
+    )
+
+    data class Onboarding(val linkTtl: Duration = Duration.ofDays(14))
+
     data class Bootstrap(val adminPhone: String? = null, val adminName: String? = null)
 
     data class Auth(

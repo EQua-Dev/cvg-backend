@@ -13,6 +13,10 @@ spring:
       hibernate.jdbc.time_zone: UTC
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -44,3 +48,9 @@ cvg:
     cookie-secure: ${CVG_COOKIE_SECURE:true}
   cors:
     allowed-origins: ${CVG_CORS_ORIGINS:http://localhost:3000,http://localhost:3001,http://localhost:3002}
+  links:
+    club-app: ${CVG_CLUB_APP_URL:http://localhost:3002}
+    public-site: ${CVG_PUBLIC_SITE_URL:http://localhost:3000}
+    verify-secret: ${CVG_VERIFY_SECRET:dev-only-change-me}
+  onboarding:
+    link-ttl: 14d

@@ -36,9 +36,12 @@ Sign in with the admin phone and the **last 4 digits of that phone** as the pass
 | `CVG_BOOTSTRAP_ADMIN_PHONE` / `CVG_BOOTSTRAP_ADMIN_NAME` | — | Only used while the club has no members |
 | `CVG_COOKIE_DOMAIN` | — | e.g. `.cvgfc.ng`, so the Desk and the Club share the session |
 | `CVG_COOKIE_SECURE` | `true` | Set `false` for plain-HTTP local dev |
+| `CVG_CLUB_APP_URL` | `http://localhost:3002` | Used in onboarding links sent on WhatsApp |
+| `CVG_PUBLIC_SITE_URL` | `http://localhost:3000` | Used in ID card QR codes |
+| `CVG_VERIFY_SECRET` | dev value | **Set in production.** Signs ID card QR links so member codes can't be enumerated |
 | `CVG_CORS_ORIGINS` | `http://localhost:3000,3001,3002` | Comma-separated front-end origins |
 
-## API (M1 Foundation)
+## API
 
 All errors look like `{"code": "jersey_taken", "message": "Jersey #7 is taken.", "fields": {...}}`.
 `code` is stable for the apps; `message` is short and ready to show.
@@ -82,11 +85,53 @@ Rules: member codes (`CVG-0001`…) are never reused; phones are unique; jersey 
 
 `GET /api/audit?page=&size=&entityType=` (ADMIN, COACH, TREASURER) returns every change, with who made it and the before → after values. It's append-only.
 
+### Onboarding link (M2)
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| POST | `/api/members/{id}/onboarding-link` | ADMIN | → `{url, expiresAt}`. 14 days. A new link cancels the old one |
+| GET | `/api/onboarding/{token}` | anyone | `{firstName, code, jerseyNumber, phoneHint, alreadySetUp}`. 404 `link_invalid` |
+| POST | `/api/onboarding/{token}/claim` | anyone | `{"passcode":"2580"}` sets their passcode and signs them in (cookie + token). The link is then used up |
+
+### Profile and photo (M2)
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/profile/options` | signed in | Pick lists: 15 positions (with group), feet, 23 traits, 37 states |
+| GET / PUT | `/api/me/profile` | signed in | Full replace of the draft: positions, foot, weak foot, strengths/weaknesses (max 3 each), height, birth date, state, preferred jersey, emergency contact, consent. Returns `complete` and `missing` (wizard order) |
+| PUT | `/api/me/photo` | signed in | Multipart `file`, JPEG/PNG/WebP up to 2MB (type checked from the bytes) |
+| GET | `/api/members/{id}/profile` | signed in | Squad-mates get football details only; member + management also get birth date, emergency contact, consent |
+| GET | `/api/members/{id}/photo` | signed in | Cached by ETag |
+
+### Profiling questionnaire (M2)
+
+The questions and their scoring live in `src/main/resources/profiling/questionnaire-v1.json` (from `docs/PROFILING_QUESTIONNAIRE.md`). Points are never sent to the apps.
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/me/profiling/questionnaire` | signed in | 6 common + 8 for their position group (+1 unscored). 409 `no_position` until a main position is set |
+| POST | `/api/me/profiling` | signed in | `{"version":1,"answers":{"A1":"b",...}}` → `{label, topPlan, planFits, mainRole, secondaryRole, lowConfidence, coachPick}` |
+| GET | `/api/me/profiling` | signed in | Latest result (204 if none) |
+| GET | `/api/members/{id}/profiling` | ADMIN, COACH, CAPTAIN | |
+
+### ID card (M2)
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/me/card` | signed in | Everything printed on the card, including the signed `verifyUrl` for the QR code |
+| GET | `/api/members/{id}/card` | management | |
+| GET | `/api/public/verify/{code}/{signature}` | anyone | Name, member ID, status, current yes/no, season. Photo and position only with the member's consent |
+| GET | `/api/public/verify/{code}/{signature}/photo` | anyone | Only with consent |
+
 ## Layout
 
 ```
 src/main/kotlin/ng/cvgfc/api/
   auth/      passcodes, sessions, security filter
+  onboarding/  join links
+  profile/   player profile, photos, pick lists
+  profiling/ questionnaire scoring
+  card/      ID card and public verification
   member/    members, roles, first-admin bootstrap
   season/    seasons
   audit/     append-only change log

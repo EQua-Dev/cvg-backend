@@ -33,7 +33,10 @@ abstract class IntegrationTest {
 
     @BeforeEach
     fun cleanDatabase() {
-        jdbc.execute("TRUNCATE audit_event, auth_session, season, member_role, member CASCADE")
+        jdbc.execute(
+            "TRUNCATE audit_event, auth_session, season, member_role, member, onboarding_link, " +
+                "member_profile, media_asset, profiling_response CASCADE",
+        )
     }
 
     fun createMember(

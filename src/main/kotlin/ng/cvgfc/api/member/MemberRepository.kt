@@ -10,6 +10,8 @@ interface MemberRepository : JpaRepository<Member, UUID> {
 
     fun findByClubIdAndPhone(clubId: UUID, phone: String): Member?
 
+    fun findByClubIdAndMemberNo(clubId: UUID, memberNo: Int): Member?
+
     fun findByClubIdOrderByMemberNo(clubId: UUID): List<Member>
 
     fun countByClubId(clubId: UUID): Long

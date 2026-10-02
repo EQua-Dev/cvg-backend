@@ -1,0 +1,1474 @@
+{
+ "version": 1,
+ "intro": {
+  "title": "How do you play?",
+  "subtitle": "14 quick taps. No wrong answers."
+ },
+ "plans": [
+  {
+   "code": "POS",
+   "name": "Possession",
+   "adjective": "Possession"
+  },
+  {
+   "code": "CTR",
+   "name": "Counter-attack",
+   "adjective": "Counter-attacking"
+  },
+  {
+   "code": "PRS",
+   "name": "High press",
+   "adjective": "Pressing"
+  },
+  {
+   "code": "BLK",
+   "name": "Defensive",
+   "adjective": "Defensive"
+  },
+  {
+   "code": "DIR",
+   "name": "Direct",
+   "adjective": "Direct"
+  }
+ ],
+ "roles": {
+  "GK": [
+   {
+    "code": "SWK",
+    "name": "Sweeper-keeper"
+   },
+   {
+    "code": "SHS",
+    "name": "Shot-stopper"
+   },
+   {
+    "code": "DST",
+    "name": "Distributor"
+   },
+   {
+    "code": "CMD",
+    "name": "Commander"
+   }
+  ],
+  "DEF": [
+   {
+    "code": "BPD",
+    "name": "Ball-playing Defender"
+   },
+   {
+    "code": "STP",
+    "name": "Stopper"
+   },
+   {
+    "code": "CVR",
+    "name": "Covering Defender"
+   },
+   {
+    "code": "AFB",
+    "name": "Attacking Full-back"
+   },
+   {
+    "code": "DFB",
+    "name": "Defensive Full-back"
+   },
+   {
+    "code": "IFB",
+    "name": "Inverted Full-back"
+   }
+  ],
+  "MID": [
+   {
+    "code": "DLP",
+    "name": "Deep Playmaker"
+   },
+   {
+    "code": "BWM",
+    "name": "Ball-winner"
+   },
+   {
+    "code": "B2B",
+    "name": "Box-to-box"
+   },
+   {
+    "code": "AP",
+    "name": "Attacking Playmaker"
+   },
+   {
+    "code": "CAR",
+    "name": "Ball-carrier"
+   }
+  ],
+  "ATT": [
+   {
+    "code": "POA",
+    "name": "Poacher"
+   },
+   {
+    "code": "TGT",
+    "name": "Target Man"
+   },
+   {
+    "code": "INF",
+    "name": "Inside Forward"
+   },
+   {
+    "code": "PRF",
+    "name": "Pressing Forward"
+   },
+   {
+    "code": "LNK",
+    "name": "Link Forward"
+   },
+   {
+    "code": "WNG",
+    "name": "Winger"
+   },
+   {
+    "code": "RUN",
+    "name": "Runner in Behind"
+   }
+  ]
+ },
+ "consistencyCheck": [
+  "A1",
+  "A5"
+ ],
+ "sections": {
+  "COMMON": [
+   {
+    "id": "A1",
+    "text": "1–0 up. 15 mins left. We…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Keep the ball",
+      "points": {
+       "POS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Sit back, then break",
+      "points": {
+       "BLK": 1,
+       "CTR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Keep pressing",
+      "points": {
+       "PRS": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "Go long",
+      "points": {
+       "DIR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "A2",
+    "text": "Best goal to be part of?",
+    "options": [
+     {
+      "id": "a",
+      "text": "20-pass move",
+      "points": {
+       "POS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Fast break, 10 secs",
+      "points": {
+       "CTR": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Steal it, score",
+      "points": {
+       "PRS": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "Long ball, flick, goal",
+      "points": {
+       "DIR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "A3",
+    "text": "We lose the ball. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Press him now",
+      "points": {
+       "PRS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Run back to position",
+      "points": {
+       "BLK": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Block the pass",
+      "points": {
+       "PRS": 1,
+       "POS": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Wait for the counter",
+      "points": {
+       "CTR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "A4",
+    "text": "Your engine?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Full match, non-stop",
+      "points": {
+       "PRS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Strong for 60 mins",
+      "points": {
+       "POS": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Quick bursts",
+      "points": {
+       "CTR": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "I read the game more than I run",
+      "points": {
+       "BLK": 1,
+       "POS": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "A5",
+    "text": "“We defend deep today.” You feel…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Happy 👍",
+      "points": {
+       "BLK": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "OK, if we counter",
+      "points": {
+       "CTR": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "I want the ball",
+      "points": {
+       "POS": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "I want to press",
+      "points": {
+       "PRS": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "A6",
+    "text": "Bumpy pitch. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Still pass short",
+      "points": {
+       "POS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Play long, fight for it",
+      "points": {
+       "DIR": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Stay tight, wait",
+      "points": {
+       "BLK": 1,
+       "CTR": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "No change",
+      "points": {}
+     }
+    ]
+   },
+   {
+    "id": "A7",
+    "text": "Best style for CVG?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Possession",
+      "points": {}
+     },
+     {
+      "id": "b",
+      "text": "Counter",
+      "points": {}
+     },
+     {
+      "id": "c",
+      "text": "Press",
+      "points": {}
+     },
+     {
+      "id": "d",
+      "text": "Defend",
+      "points": {}
+     },
+     {
+      "id": "e",
+      "text": "Direct",
+      "points": {}
+     }
+    ],
+    "scored": false
+   }
+  ],
+  "GK": [
+   {
+    "id": "G1",
+    "text": "Ball over our high line. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Rush out, clear it",
+      "points": {
+       "SWK": 2,
+       "PRS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Stay on my line",
+      "points": {
+       "SHS": 2,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Edge of the box",
+      "points": {
+       "SWK": 1,
+       "SHS": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Call my defender",
+      "points": {
+       "CMD": 1,
+       "BLK": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "G2",
+    "text": "You catch a cross. Then?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Quick throw, counter",
+      "points": {
+       "CTR": 2,
+       "DST": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Roll it to a CB",
+      "points": {
+       "POS": 2,
+       "DST": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Kick it long",
+      "points": {
+       "DIR": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "Hold it, calm down",
+      "points": {
+       "BLK": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "G3",
+    "text": "Corner coming. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Claim it all",
+      "points": {
+       "CMD": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Stay on my line",
+      "points": {
+       "SHS": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Only the high ones",
+      "points": {
+       "CMD": 1,
+       "SHS": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "G4",
+    "text": "Goal kick. They press high.",
+    "options": [
+     {
+      "id": "a",
+      "text": "Short anyway",
+      "points": {
+       "POS": 2,
+       "DST": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Chip to a midfielder",
+      "points": {
+       "DST": 1,
+       "POS": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Long to the striker",
+      "points": {
+       "DIR": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "Long to the winger",
+      "points": {
+       "CTR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "G5",
+    "text": "Proudest moment?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Reflex save",
+      "points": {
+       "SHS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "1v1 save",
+      "points": {
+       "SWK": 1,
+       "SHS": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Claimed a cross",
+      "points": {
+       "CMD": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "My kick led to a goal",
+      "points": {
+       "DST": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "G6",
+    "text": "Striker through on goal. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Rush him",
+      "points": {
+       "SWK": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Stay big, wait",
+      "points": {
+       "SHS": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Halfway, then set",
+      "points": {
+       "SWK": 1,
+       "SHS": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "G7",
+    "text": "Back-pass to your weak foot.",
+    "options": [
+     {
+      "id": "a",
+      "text": "Touch and pass",
+      "points": {
+       "DST": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Clear it",
+      "points": {
+       "SHS": 1,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "One-touch pass",
+      "points": {
+       "DST": 1,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "G8",
+    "text": "You talk to your defence…",
+    "options": [
+     {
+      "id": "a",
+      "text": "All game",
+      "points": {
+       "CMD": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Sometimes",
+      "points": {
+       "SHS": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "To start attacks",
+      "points": {
+       "DST": 1
+      }
+     }
+    ]
+   }
+  ],
+  "DEF": [
+   {
+    "id": "D1",
+    "text": "Striker drops deep. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Follow him tight",
+      "points": {
+       "STP": 2,
+       "PRS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Hold my line",
+      "points": {
+       "CVR": 2,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Go only if sure",
+      "points": {
+       "CVR": 1,
+       "STP": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "D2",
+    "text": "You win it. Free space. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Carry it forward",
+      "points": {
+       "BPD": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Pass through the lines",
+      "points": {
+       "BPD": 2,
+       "CTR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Simple pass",
+      "points": {
+       "POS": 1,
+       "DFB": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Long ball",
+      "points": {
+       "DIR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "D3",
+    "text": "Fast winger runs at you. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Show him outside",
+      "points": {
+       "DFB": 2,
+       "CVR": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Tackle early",
+      "points": {
+       "STP": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Back off, wait for help",
+      "points": {
+       "CVR": 2,
+       "BLK": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "D4",
+    "text": "Our winger has it. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Overlap",
+      "points": {
+       "AFB": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Move inside",
+      "points": {
+       "IFB": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Stay back",
+      "points": {
+       "DFB": 2,
+       "BLK": 1
+      }
+     }
+    ],
+    "only": "FB"
+   },
+   {
+    "id": "D4CB",
+    "text": "They press our CB. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Go wide, ask for it",
+      "points": {
+       "BPD": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Stay and cover",
+      "points": {
+       "CVR": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Shout “go long!”",
+      "points": {
+       "DIR": 2
+      }
+     }
+    ],
+    "only": "CB"
+   },
+   {
+    "id": "D5",
+    "text": "Cross coming. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Attack the ball",
+      "points": {
+       "STP": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Mark my man",
+      "points": {
+       "DFB": 1,
+       "CVR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Read it, cut it out",
+      "points": {
+       "CVR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "D6",
+    "text": "High line? You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Love it, I'm fast",
+      "points": {
+       "CVR": 1,
+       "PRS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Prefer deep",
+      "points": {
+       "BLK": 2,
+       "STP": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "OK if the keeper covers",
+      "points": {
+       "PRS": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "D7",
+    "text": "Pressed near our box.",
+    "options": [
+     {
+      "id": "a",
+      "text": "Play out calm",
+      "points": {
+       "BPD": 2,
+       "POS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Clear it",
+      "points": {
+       "STP": 1,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Long to a forward",
+      "points": {
+       "DIR": 1,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "D8",
+    "text": "Their corner. Your job?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Mark their best header",
+      "points": {
+       "STP": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Zone, attack the ball",
+      "points": {
+       "CVR": 1,
+       "STP": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Stay up for the counter",
+      "points": {
+       "CTR": 2,
+       "AFB": 1
+      }
+     }
+    ]
+   }
+  ],
+  "MID": [
+   {
+    "id": "M1",
+    "text": "Where do you want the ball?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Deep, facing forward",
+      "points": {
+       "DLP": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Between their lines",
+      "points": {
+       "AP": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "I win it back",
+      "points": {
+       "BWM": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "On the run",
+      "points": {
+       "CAR": 1,
+       "B2B": 1,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "M2",
+    "text": "Free in midfield. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Switch the play",
+      "points": {
+       "DLP": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Through ball",
+      "points": {
+       "AP": 2,
+       "CTR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Dribble forward",
+      "points": {
+       "CAR": 2,
+       "CTR": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Keep it simple",
+      "points": {
+       "POS": 2,
+       "BWM": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "M3",
+    "text": "Their playmaker is running things. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Mark him tight",
+      "points": {
+       "BWM": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Press him every time",
+      "points": {
+       "BWM": 1,
+       "PRS": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Block his passes",
+      "points": {
+       "BLK": 1,
+       "DLP": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "M4",
+    "text": "Counter is on. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Quick pass forward",
+      "points": {
+       "DLP": 1,
+       "CTR": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Sprint to join",
+      "points": {
+       "B2B": 2,
+       "CTR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Stay back",
+      "points": {
+       "BWM": 1,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Carry it myself",
+      "points": {
+       "CAR": 2,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "M5",
+    "text": "We're attacking. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Arrive late in the box",
+      "points": {
+       "B2B": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Look for the final pass",
+      "points": {
+       "AP": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Sit at the edge, cover",
+      "points": {
+       "DLP": 1,
+       "BWM": 1,
+       "POS": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Beat my man",
+      "points": {
+       "CAR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "M6",
+    "text": "Top stat you want?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Assists",
+      "points": {
+       "AP": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Tackles",
+      "points": {
+       "BWM": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Distance run",
+      "points": {
+       "B2B": 2,
+       "PRS": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Passes",
+      "points": {
+       "DLP": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "e",
+      "text": "Dribbles",
+      "points": {
+       "CAR": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "M7",
+    "text": "We're under pressure. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Drop deep for the ball",
+      "points": {
+       "DLP": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Stick to my man",
+      "points": {
+       "BWM": 1,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Keep moving, give an option",
+      "points": {
+       "B2B": 1,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "M8",
+    "text": "Long balls everywhere. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Win second balls",
+      "points": {
+       "BWM": 1,
+       "B2B": 1,
+       "DIR": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Get it back on the ground",
+      "points": {
+       "DLP": 1,
+       "POS": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Chase the flick-ons",
+      "points": {
+       "B2B": 1,
+       "DIR": 1
+      }
+     }
+    ]
+   }
+  ],
+  "ATT": [
+   {
+    "id": "T1",
+    "text": "Most of your goals?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Tap-ins",
+      "points": {
+       "POA": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Headers",
+      "points": {
+       "TGT": 2,
+       "DIR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Cut in, shoot",
+      "points": {
+       "INF": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "1v1 runs",
+      "points": {
+       "RUN": 2,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "T2",
+    "text": "Our CB has it. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Run in behind",
+      "points": {
+       "RUN": 2,
+       "CTR": 1,
+       "DIR": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Drop to link",
+      "points": {
+       "LNK": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Hold, back to goal",
+      "points": {
+       "TGT": 2
+      }
+     },
+     {
+      "id": "d",
+      "text": "Stay wide",
+      "points": {
+       "WNG": 2,
+       "POS": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "T3",
+    "text": "Their CB has it. You…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Press him",
+      "points": {
+       "PRF": 2,
+       "PRS": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Block the pass",
+      "points": {
+       "PRF": 1,
+       "BLK": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Rest, wait for the counter",
+      "points": {
+       "POA": 1,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "T4",
+    "text": "1v1 with their full-back.",
+    "options": [
+     {
+      "id": "a",
+      "text": "Go outside, cross",
+      "points": {
+       "WNG": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Cut inside",
+      "points": {
+       "INF": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Pass and run",
+      "points": {
+       "LNK": 1,
+       "POA": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Knock and race",
+      "points": {
+       "RUN": 1,
+       "CTR": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "T5",
+    "text": "Cross coming. You go…",
+    "options": [
+     {
+      "id": "a",
+      "text": "Near post",
+      "points": {
+       "POA": 1,
+       "TGT": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Far post",
+      "points": {
+       "POA": 1,
+       "WNG": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Win the header",
+      "points": {
+       "TGT": 2,
+       "DIR": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Edge for the cut-back",
+      "points": {
+       "INF": 1,
+       "LNK": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "T6",
+    "text": "Long ball to you.",
+    "options": [
+     {
+      "id": "a",
+      "text": "Hold it up",
+      "points": {
+       "TGT": 2,
+       "DIR": 2
+      }
+     },
+     {
+      "id": "b",
+      "text": "Flick it on",
+      "points": {
+       "TGT": 1,
+       "DIR": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Prefer it to feet",
+      "points": {
+       "RUN": 1,
+       "LNK": 1,
+       "POS": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "T7",
+    "text": "1v1 with the keeper.",
+    "options": [
+     {
+      "id": "a",
+      "text": "Shoot early",
+      "points": {
+       "POA": 1,
+       "RUN": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Round him",
+      "points": {
+       "INF": 1,
+       "RUN": 1
+      }
+     },
+     {
+      "id": "c",
+      "text": "Square it",
+      "points": {
+       "LNK": 2
+      }
+     }
+    ]
+   },
+   {
+    "id": "T8",
+    "text": "Proudest moment?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Dribbled 2, scored",
+      "points": {
+       "INF": 1,
+       "WNG": 1
+      }
+     },
+     {
+      "id": "b",
+      "text": "Counter goal, long run",
+      "points": {
+       "RUN": 2,
+       "CTR": 2
+      }
+     },
+     {
+      "id": "c",
+      "text": "Clever assist",
+      "points": {
+       "LNK": 2,
+       "POS": 1
+      }
+     },
+     {
+      "id": "d",
+      "text": "Stole it, scored",
+      "points": {
+       "PRF": 2,
+       "PRS": 1
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

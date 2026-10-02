@@ -38,13 +38,18 @@ class AuthService(
             ?: throw ApiException(HttpStatus.NOT_FOUND, "not_registered", "This number is not on the register.")
 
         passcodes.verify(member, passcode)
+        return SignedIn(startSession(member, userAgent), member)
+    }
 
+    /** Creates a session for a member who has just proven who they are. Returns the raw token. */
+    @Transactional
+    fun startSession(member: Member, userAgent: String?): String {
         val now = Instant.now(clock)
         val token = Hashing.randomToken(32)
         sessions.save(
             AuthSession(member.id, Hashing.sha256(token), now.plus(properties.auth.sessionTtl), userAgent?.take(255), now),
         )
-        return SignedIn(token, member)
+        return token
     }
 
     /** The member sets their own passcode. Other devices are signed out. */

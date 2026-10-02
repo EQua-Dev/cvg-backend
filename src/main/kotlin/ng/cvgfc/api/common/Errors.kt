@@ -10,12 +10,18 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 
 /**
  * A failure the client can act on. [code] is a stable machine-readable key
  * (e.g. "jersey_taken"); the message is short, plain English for the UI.
  */
-class ApiException(val status: HttpStatus, val code: String, message: String) : RuntimeException(message) {
+class ApiException(
+    val status: HttpStatus,
+    val code: String,
+    message: String,
+    val fields: Map<String, String>? = null,
+) : RuntimeException(message) {
     companion object {
         fun notFound(what: String) = ApiException(HttpStatus.NOT_FOUND, "not_found", "$what not found.")
         fun badRequest(code: String, message: String) = ApiException(HttpStatus.BAD_REQUEST, code, message)
@@ -31,7 +37,7 @@ class GlobalExceptionHandler {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @ExceptionHandler(ApiException::class)
-    fun api(e: ApiException) = ResponseEntity.status(e.status).body(ErrorBody(e.code, e.message ?: ""))
+    fun api(e: ApiException) = ResponseEntity.status(e.status).body(ErrorBody(e.code, e.message ?: "", e.fields))
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun invalid(e: MethodArgumentNotValidException): ResponseEntity<ErrorBody> {
@@ -42,6 +48,10 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException::class, MethodArgumentTypeMismatchException::class)
     fun unreadable(e: Exception) = ResponseEntity.badRequest().body(ErrorBody("bad_request", "Bad request."))
+
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun tooBig(e: MaxUploadSizeExceededException) =
+        ResponseEntity.badRequest().body(ErrorBody("photo_too_big", "Photo is too big. Try another."))
 
     @ExceptionHandler(AccessDeniedException::class)
     fun denied(e: AccessDeniedException) =
