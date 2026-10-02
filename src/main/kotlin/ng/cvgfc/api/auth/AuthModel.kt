@@ -15,34 +15,6 @@ data class CurrentMember(val id: UUID, val sessionId: UUID, val roles: Set<Role>
     fun has(role: Role) = role in roles
 }
 
-/** A one-time sign-in code sent by SMS. Only the hash is stored. */
-@Entity
-@Table(name = "otp_challenge")
-class OtpChallenge(
-    @Column(nullable = false, updatable = false)
-    val phone: String,
-    @Column(name = "code_hash", nullable = false, updatable = false)
-    val codeHash: String,
-    @Column(name = "expires_at", nullable = false, updatable = false)
-    val expiresAt: Instant,
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: Instant,
-) {
-    @Id
-    val id: UUID = UUID.randomUUID()
-
-    @Column(nullable = false)
-    var attempts: Short = 0
-
-    @Column(name = "consumed_at")
-    var consumedAt: Instant? = null
-}
-
-interface OtpChallengeRepository : JpaRepository<OtpChallenge, UUID> {
-    fun countByPhoneAndCreatedAtAfter(phone: String, after: Instant): Long
-    fun findFirstByPhoneOrderByCreatedAtDesc(phone: String): OtpChallenge?
-}
-
 /** A signed-in device. The raw token lives only in the client's cookie; we keep its hash. */
 @Entity
 @Table(name = "auth_session")

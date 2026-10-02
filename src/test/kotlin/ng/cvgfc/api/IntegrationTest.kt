@@ -3,7 +3,6 @@ package ng.cvgfc.api
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import ng.cvgfc.api.auth.SessionAuthenticationFilter
-import ng.cvgfc.api.auth.sms.SmsSender
 import ng.cvgfc.api.member.CreateMemberRequest
 import ng.cvgfc.api.member.Member
 import ng.cvgfc.api.member.MemberService
@@ -13,9 +12,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
@@ -23,45 +19,21 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.transaction.support.TransactionTemplate
-import java.util.concurrent.CopyOnWriteArrayList
-
-/** Records outgoing texts so tests can read the sign-in code. */
-class CapturingSmsSender : SmsSender {
-    data class Sent(val phone: String, val message: String)
-
-    val sent = CopyOnWriteArrayList<Sent>()
-
-    override fun send(phoneE164: String, message: String) {
-        sent += Sent(phoneE164, message)
-    }
-
-    fun lastCodeFor(phoneE164: String): String =
-        sent.last { it.phone == phoneE164 }.message.take(6)
-}
-
-@TestConfiguration
-class TestSmsConfig {
-    @Bean
-    fun smsSender() = CapturingSmsSender()
-}
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestSmsConfig::class)
 abstract class IntegrationTest {
 
     @Autowired lateinit var mvc: MockMvc
     @Autowired lateinit var json: ObjectMapper
     @Autowired lateinit var jdbc: JdbcTemplate
-    @Autowired lateinit var sms: CapturingSmsSender
     @Autowired lateinit var memberService: MemberService
     @Autowired lateinit var tx: TransactionTemplate
 
     @BeforeEach
     fun cleanDatabase() {
-        jdbc.execute("TRUNCATE audit_event, auth_session, otp_challenge, season, member_role, member CASCADE")
-        sms.sent.clear()
+        jdbc.execute("TRUNCATE audit_event, auth_session, season, member_role, member CASCADE")
     }
 
     fun createMember(
@@ -77,14 +49,11 @@ abstract class IntegrationTest {
         )
     }!!
 
-    /** Signs in through the real code flow and returns the bearer token. */
-    fun signIn(phone: String): String {
-        mvc.perform(post("/api/auth/code").contentType(MediaType.APPLICATION_JSON).content("""{"phone":"$phone"}"""))
-        val e164 = ng.cvgfc.api.common.PhoneNumbers.require(phone)
-        val result = mvc.perform(
-            post("/api/auth/verify").contentType(MediaType.APPLICATION_JSON)
-                .content("""{"phone":"$phone","code":"${sms.lastCodeFor(e164)}"}"""),
-        ).andReturn()
+    /** Signs in with the default passcode (last 4 digits of the phone) and returns the bearer token. */
+    fun signIn(phone: String, passcode: String = phone.filter { it.isDigit() }.takeLast(4)): String {
+        val result = mvc.perform(post("/api/auth/sign-in").jsonBody("""{"phone":"$phone","passcode":"$passcode"}"""))
+            .andReturn()
+        check(result.response.status == 200) { "Sign-in failed: ${result.response.contentAsString}" }
         return json.readTree(result.response.contentAsString)["token"].asText()
     }
 

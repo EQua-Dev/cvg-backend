@@ -3,6 +3,7 @@ package ng.cvgfc.api.member
 import jakarta.validation.Valid
 import ng.cvgfc.api.auth.CurrentMember
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -57,6 +58,14 @@ class MemberController(private val service: MemberService) {
     @PreAuthorize("hasRole('ADMIN')")
     fun roles(@PathVariable id: UUID, @RequestBody req: RolesRequest, @AuthenticationPrincipal me: CurrentMember) =
         MemberView.of(service.changeRoles(id, req.roles, me.id), true)
+
+    /** Forgotten passcode: back to the last 4 digits of their phone, and all devices signed out. */
+    @PostMapping("/{id}/reset-passcode")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun resetPasscode(@PathVariable id: UUID, @AuthenticationPrincipal me: CurrentMember): ResponseEntity<Void> {
+        service.resetPasscode(id, me.id)
+        return ResponseEntity.noContent().build()
+    }
 
     private fun CurrentMember.canSeePhoneOf(m: Member) = isManagement || id == m.id
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import ng.cvgfc.api.audit.AuditService
+import ng.cvgfc.api.auth.AuthService
 import ng.cvgfc.api.common.ApiException
 import ng.cvgfc.api.common.PhoneNumbers
 import ng.cvgfc.api.config.CvgProperties
@@ -71,6 +72,7 @@ class MemberService(
     private val audit: AuditService,
     private val properties: CvgProperties,
     private val clock: Clock,
+    private val authService: AuthService,
 ) {
     private val clubId get() = properties.clubId
 
@@ -155,6 +157,11 @@ class MemberService(
         m.roles.addAll(roles)
         audit.record(actorId, "member.roles_changed", "member", id, "Roles for ${m.fullName}", before, m.snapshot())
         return m
+    }
+
+    @Transactional
+    fun resetPasscode(id: UUID, actorId: UUID) {
+        authService.resetPasscode(get(id), actorId)
     }
 
     private fun ensureAnotherAdmin(excluding: UUID) {

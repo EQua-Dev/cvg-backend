@@ -58,11 +58,16 @@ Many members won't read long text or click through many steps. Every screen foll
 
 | App | Repo | Who | Login |
 |---|---|---|---|
-| **The Desk** | `cvg-admin` | Members holding a management role | Phone + SMS code |
-| **The Club** | `cvg-players` | Every member | Phone + SMS code |
+| **The Desk** | `cvg-admin` | Members holding a management role | Phone + passcode |
+| **The Club** | `cvg-players` | Every member | Phone + passcode |
 | **The Board** | `cvg-public` | Anyone | None |
 
 There's one account per person. A member with a management role uses the same phone number to sign in to both the Club and the Desk.
+
+**Sign-in:** phone number + passcode. No SMS needed.
+- **First time:** the passcode is the **last 4 digits of the member's phone**. The app then asks them to set their own (4–6 numbers), with an option to skip.
+- **Rules:** no easy codes like `1234` or `0000`. Five wrong tries lock the account for 15 minutes.
+- **Forgotten passcode:** an admin taps **Reset passcode**. It goes back to the last 4 digits of their phone, and all their devices are signed out.
 
 ---
 
@@ -100,7 +105,7 @@ There's one account per person. A member with a management role uses the same ph
 
 1. Admin adds a member (name, phone, jersey, status, roles).
 2. The system creates a private link, `club.cvgfc.ng/join/<token>`, and the Desk shows a **Share on WhatsApp** button with a ready-made message.
-3. The player opens the link and confirms their phone with a 6-digit SMS code. This turns the link into their account.
+3. The player opens the link and sets their **passcode** (4–6 numbers). This turns the link into their account. Until they set one, the passcode is the **last 4 digits of their phone**.
 4. The player fills in the profile below. Most of it is picked from lists.
 5. Once submitted, the link expires. Admin can generate a new one at any time. Unused links expire after 14 days.
 
@@ -449,7 +454,7 @@ Once ~15–20 matches are recorded, **partnership stats** (goals for and against
 8. **Seasons** · **Audit log** · **Settings** (club details, venues, opponents, attendance cutoff).
 
 ### The Club (`cvg-players`)
-1. **Sign in** (phone + code) / **Join** (onboarding link).
+1. **Sign in** (phone + passcode) / **Join** (onboarding link).
 2. **Home:** next event with **I'm in / I'm out**, outstanding dues, open actions ("Vote POTM", "Rate your squad", "Give your match opinion").
 3. **Matches:** fixtures, published lineups, results, POTM vote, opinions.
 4. **My record:** attendance %, streak, sessions list, goals/assists/POTM, payments.
@@ -471,7 +476,7 @@ Each public page has a WhatsApp-friendly link preview image.
 
 ## 12. Data model (backend entities)
 
-`Club` · `Season` · `Member` · `MemberRole` · `OnboardingLink` · `OtpChallenge` · `AuthSession` · `MediaAsset` · `Venue` · `Opponent` · `TrainingPattern` · `TrainingSession` · `Availability` · `AttendanceMark` · `Collection` · `CollectionTarget` · `LedgerEntry` · `Match` · `Formation` · `LineupSlot` · `GuestPlayer` · `MatchGoal` · `MatchCard` · `PotmVote` · `MatchOpinion` · `StatDefinition` · `PositionGroupStatSet` · `RatingWindow` · `Rating` · `PlayerCard` (versioned) · `ProfilingRound` · `ProfilingQuestion` · `ProfilingOption` (with point weights) · `ProfilingResponse` · `PlayerProfile` (plan fits, role, label) · `PeerRoleVote` · `ChemistryRule` · `AuditEvent`
+`Club` · `Season` · `Member` · `MemberRole` · `OnboardingLink` · `AuthSession` · `MediaAsset` · `Venue` · `Opponent` · `TrainingPattern` · `TrainingSession` · `Availability` · `AttendanceMark` · `Collection` · `CollectionTarget` · `LedgerEntry` · `Match` · `Formation` · `LineupSlot` · `GuestPlayer` · `MatchGoal` · `MatchCard` · `PotmVote` · `MatchOpinion` · `StatDefinition` · `PositionGroupStatSet` · `RatingWindow` · `Rating` · `PlayerCard` (versioned) · `ProfilingRound` · `ProfilingQuestion` · `ProfilingOption` (with point weights) · `ProfilingResponse` · `PlayerProfile` (plan fits, role, label) · `PeerRoleVote` · `ChemistryRule` · `AuditEvent`
 
 Questions and point weights are stored as data, not code, so the coach can adjust them without a new release.
 
@@ -483,7 +488,6 @@ Every table carries a `club_id`, so the platform can serve other clubs later wit
 
 | Need | Choice |
 |---|---|
-| SMS login codes | Termii (Nigerian provider, works with local networks) |
 | Photo storage | S3-compatible storage (e.g. Cloudflare R2) |
 | Card / share images | Generated on the server as PNG |
 | WhatsApp sharing | `wa.me` share links (no paid API needed for v1) |
@@ -494,7 +498,7 @@ Every table carries a `club_id`, so the platform can serve other clubs later wit
 
 | Milestone | Delivers |
 |---|---|
-| **M1 Foundation** | Backend skeleton, auth (phone + code), members, roles, seasons, audit, Desk + Club shells |
+| **M1 Foundation** | Backend skeleton, auth (phone + passcode), members, roles, seasons, audit, Desk + Club shells |
 | **M2 Onboarding** | Onboarding links, profile form, photo upload, ID card + verify page |
 | **M3 Money** | Collections, payment records, ledger, reversals, player dues view |
 | **M4 Training** | Schedule, sessions, availability, offline attendance, attendance stats |

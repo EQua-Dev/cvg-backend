@@ -1,6 +1,6 @@
 package ng.cvgfc.api.auth
 
-import ng.cvgfc.api.auth.sms.SmsSender
+import ng.cvgfc.api.audit.AuditService
 import ng.cvgfc.api.common.ApiException
 import ng.cvgfc.api.common.Hashing
 import ng.cvgfc.api.common.PhoneNumbers
@@ -13,67 +13,56 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.util.UUID
 
 data class SignedIn(val token: String, val member: Member)
 
 @Service
 class AuthService(
     private val members: MemberRepository,
-    private val challenges: OtpChallengeRepository,
     private val sessions: AuthSessionRepository,
-    private val sms: SmsSender,
+    private val passcodes: Passcodes,
+    private val audit: AuditService,
     private val properties: CvgProperties,
     private val clock: Clock,
 ) {
-    private val config get() = properties.auth
-
     /**
-     * Sends a 6-digit code to a registered member. Unknown numbers get a clear
-     * "not on the register" answer: the squad is small and the UX matters more
-     * than hiding who is a member. Requests are rate-limited per phone.
+     * Phone + passcode sign-in. Unknown numbers get a clear "not on the register":
+     * the squad is small and a helpful message matters more than hiding membership.
      */
-    @Transactional
-    fun requestCode(rawPhone: String): Duration {
-        val phone = PhoneNumbers.require(rawPhone)
-        val member = members.findByClubIdAndPhone(properties.clubId, phone)
-        if (member == null || !member.status.canSignIn) {
-            throw ApiException(HttpStatus.NOT_FOUND, "not_registered", "This number is not on the register.")
-        }
-        val now = Instant.now(clock)
-        if (challenges.countByPhoneAndCreatedAtAfter(phone, now.minus(Duration.ofHours(1))) >= config.otpMaxRequestsPerHour) {
-            throw ApiException(HttpStatus.TOO_MANY_REQUESTS, "too_many_codes", "Too many codes. Try again later.")
-        }
-        val code = Hashing.randomDigits(6)
-        challenges.save(OtpChallenge(phone, hashCode(phone, code), now.plus(config.otpTtl), now))
-        sms.send(phone, "$code is your CVG FC code. It expires in ${config.otpTtl.toMinutes()} mins.")
-        return config.otpTtl
-    }
-
-    /** Checks the latest code for this phone. Failed attempts are saved even though we throw. */
     @Transactional(noRollbackFor = [ApiException::class])
-    fun verifyCode(rawPhone: String, code: String, userAgent: String?): SignedIn {
+    fun signIn(rawPhone: String, passcode: String, userAgent: String?): SignedIn {
         val phone = PhoneNumbers.require(rawPhone)
-        val now = Instant.now(clock)
-        val challenge = challenges.findFirstByPhoneOrderByCreatedAtDesc(phone)
-            ?.takeIf { it.consumedAt == null && it.expiresAt.isAfter(now) }
-            ?: throw ApiException.badRequest("code_expired", "Code expired. Get a new one.")
-
-        if (challenge.attempts >= config.otpMaxAttempts) {
-            throw ApiException.badRequest("too_many_attempts", "Too many tries. Get a new code.")
-        }
-        if (!Hashing.constantTimeEquals(challenge.codeHash, hashCode(phone, code.trim()))) {
-            challenge.attempts = (challenge.attempts + 1).toShort()
-            throw ApiException.badRequest("wrong_code", "Wrong code.")
-        }
-        challenge.consumedAt = now
-
         val member = members.findByClubIdAndPhone(properties.clubId, phone)
             ?.takeIf { it.status.canSignIn }
             ?: throw ApiException(HttpStatus.NOT_FOUND, "not_registered", "This number is not on the register.")
 
+        passcodes.verify(member, passcode)
+
+        val now = Instant.now(clock)
         val token = Hashing.randomToken(32)
-        sessions.save(AuthSession(member.id, Hashing.sha256(token), now.plus(config.sessionTtl), userAgent?.take(255), now))
+        sessions.save(
+            AuthSession(member.id, Hashing.sha256(token), now.plus(properties.auth.sessionTtl), userAgent?.take(255), now),
+        )
         return SignedIn(token, member)
+    }
+
+    /** The member sets their own passcode. Other devices are signed out. */
+    @Transactional(noRollbackFor = [ApiException::class])
+    fun changePasscode(me: CurrentMember, currentPasscode: String, newPasscode: String) {
+        val member = members.findById(me.id).orElseThrow { ApiException.notFound("Member") }
+        passcodes.verify(member, currentPasscode)
+        passcodes.set(member, newPasscode)
+        revokeSessions(member.id, keep = me.sessionId)
+        audit.record(member.id, "member.passcode_changed", "member", member.id, "${member.fullName} set a passcode")
+    }
+
+    /** Admin reset: back to the last 4 digits of the phone, unlocked, all devices signed out. */
+    @Transactional
+    fun resetPasscode(member: Member, actorId: UUID) {
+        passcodes.reset(member)
+        revokeSessions(member.id, keep = null)
+        audit.record(actorId, "member.passcode_reset", "member", member.id, "Passcode reset for ${member.fullName}")
     }
 
     /** Resolves a raw session token to the signed-in member, or null if invalid. */
@@ -90,9 +79,14 @@ class AuthService(
     }
 
     @Transactional
-    fun signOut(sessionId: java.util.UUID) {
+    fun signOut(sessionId: UUID) {
         sessions.findById(sessionId).ifPresent { it.revokedAt = Instant.now(clock) }
     }
 
-    private fun hashCode(phone: String, code: String) = Hashing.sha256("$phone:$code")
+    private fun revokeSessions(memberId: UUID, keep: UUID?) {
+        val now = Instant.now(clock)
+        sessions.findByMemberIdAndRevokedAtIsNull(memberId)
+            .filter { it.id != keep }
+            .forEach { it.revokedAt = now }
+    }
 }

@@ -5,7 +5,5 @@ spring:
     password: ${TEST_DATABASE_PASSWORD:cvg}
 
 cvg:
-  sms:
-    provider: test
   auth:
     cookie-secure: false

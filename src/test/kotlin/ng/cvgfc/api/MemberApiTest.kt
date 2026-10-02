@@ -88,7 +88,7 @@ class MemberApiTest : IntegrationTest() {
     @Test
     fun `the last admin cannot remove their own admin role or leave`() {
         val me = parse(mvc.perform(get("/api/auth/me").bearer(adminToken)).andReturn().response.contentAsString)
-        val id = me["id"].asText()
+        val id = me["member"]["id"].asText()
 
         mvc.perform(put("/api/members/$id/roles").bearer(adminToken).jsonBody("""{"roles":["TREASURER"]}"""))
             .andExpect(status().isConflict)

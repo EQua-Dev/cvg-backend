@@ -94,8 +94,23 @@ class Member(
     var version: Long = 0
         protected set
 
+    /** BCrypt hash of the member's own passcode. Null = default (last 4 digits of phone). */
+    @Column(name = "passcode_hash")
+    var passcodeHash: String? = null
+
+    @Column(name = "failed_passcode_attempts", nullable = false)
+    var failedPasscodeAttempts: Short = 0
+
+    @Column(name = "passcode_locked_until")
+    var passcodeLockedUntil: Instant? = null
+
     /** Public member code, e.g. CVG-0009. Never reused. */
     val code get() = "CVG-%04d".format(memberNo)
+
+    val usesDefaultPasscode get() = passcodeHash == null
+
+    /** The default passcode: last 4 digits of the phone. */
+    val defaultPasscode get() = phone.takeLast(4)
 
     val isManagement get() = roles.isNotEmpty()
 

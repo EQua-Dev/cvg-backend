@@ -22,7 +22,7 @@ CVG_COOKIE_SECURE=false \
 ./gradlew bootRun
 ```
 
-In development, SMS codes are printed to the log (`[SMS to +234…] 123456 is your CVG FC code…`).
+Sign in with the admin phone and the **last 4 digits of that phone** as the passcode.
 
 ```bash
 ./gradlew test             # integration tests against cvg_test
@@ -34,8 +34,6 @@ In development, SMS codes are printed to the log (`[SMS to +234…] 123456 is yo
 |---|---|---|
 | `DATABASE_URL` / `DATABASE_USERNAME` / `DATABASE_PASSWORD` | `jdbc:postgresql://localhost:5432/cvg`, `cvg`, `cvg` | |
 | `CVG_BOOTSTRAP_ADMIN_PHONE` / `CVG_BOOTSTRAP_ADMIN_NAME` | — | Only used while the club has no members |
-| `CVG_SMS_PROVIDER` | `log` | `log` (dev) or `termii` |
-| `TERMII_API_KEY` / `TERMII_SENDER_ID` | — / `CVG FC` | Required for `termii` |
 | `CVG_COOKIE_DOMAIN` | — | e.g. `.cvgfc.ng`, so the Desk and the Club share the session |
 | `CVG_COOKIE_SECURE` | `true` | Set `false` for plain-HTTP local dev |
 | `CVG_CORS_ORIGINS` | `http://localhost:3000,3001,3002` | Comma-separated front-end origins |
@@ -45,14 +43,17 @@ In development, SMS codes are printed to the log (`[SMS to +234…] 123456 is yo
 All errors look like `{"code": "jersey_taken", "message": "Jersey #7 is taken.", "fields": {...}}`.
 `code` is stable for the apps; `message` is short and ready to show.
 
-### Sign in (phone + SMS code, no passwords)
+### Sign in (phone + passcode)
+
+A member's passcode starts as the **last 4 digits of their phone**. They can set their own 4–6 digit passcode (easy ones like `1234`/`0000` are refused). Five wrong tries lock sign-in for 15 minutes. An admin reset puts it back to the last 4 digits, unlocks it, and signs out all their devices.
 
 | Method | Path | Who | Body / notes |
 |---|---|---|---|
-| POST | `/api/auth/code` | anyone | `{"phone":"0803 555 0192"}` → `{"expiresInSeconds":600}`. 404 `not_registered`, 429 `too_many_codes` (5/hour) |
-| POST | `/api/auth/verify` | anyone | `{"phone":"…","code":"123456"}` → sets the `cvg_session` cookie and returns `{token, member}`. 5 tries per code |
-| GET | `/api/auth/me` | signed in | The current member |
+| POST | `/api/auth/sign-in` | anyone | `{"phone":"0803 555 0192","passcode":"0192"}` → sets the `cvg_session` cookie and returns `{token, member, usesDefaultPasscode}`. 404 `not_registered`, 400 `wrong_passcode`, 429 `passcode_locked` |
+| GET | `/api/auth/me` | signed in | `{member, usesDefaultPasscode}`. When `true`, the app nudges them to set their own |
+| PUT | `/api/auth/passcode` | signed in | `{"currentPasscode":"0192","newPasscode":"2580"}`. Signs out their other devices. 400 `invalid_passcode` / `weak_passcode` |
 | POST | `/api/auth/sign-out` | signed in | Revokes this session |
+| POST | `/api/members/{id}/reset-passcode` | ADMIN | Forgotten passcode → back to last 4 digits |
 
 Web apps use the HttpOnly `cvg_session` cookie (SameSite=Lax) and **must send `X-CVG-Client: <app name>` on every POST/PUT/PATCH/DELETE**, which is the CSRF guard. Other clients can send `Authorization: Bearer <token>` instead.
 
@@ -85,7 +86,7 @@ Rules: member codes (`CVG-0001`…) are never reused; phones are unique; jersey 
 
 ```
 src/main/kotlin/ng/cvgfc/api/
-  auth/      SMS codes, sessions, security filter
+  auth/      passcodes, sessions, security filter
   member/    members, roles, first-admin bootstrap
   season/    seasons
   audit/     append-only change log

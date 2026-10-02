@@ -36,19 +36,11 @@ cvg:
     admin-phone: ${CVG_BOOTSTRAP_ADMIN_PHONE:}
     admin-name: ${CVG_BOOTSTRAP_ADMIN_NAME:}
   auth:
-    otp-ttl: 10m
-    otp-max-attempts: 5
-    otp-max-requests-per-hour: 5
+    passcode-max-attempts: 5
+    passcode-lockout: 15m
     session-ttl: 60d
     cookie-name: cvg_session
     cookie-domain: ${CVG_COOKIE_DOMAIN:}
     cookie-secure: ${CVG_COOKIE_SECURE:true}
-  sms:
-    # "log" prints codes to the server log (development). "termii" sends real SMS.
-    provider: ${CVG_SMS_PROVIDER:log}
-    termii:
-      base-url: ${TERMII_BASE_URL:https://api.ng.termii.com}
-      api-key: ${TERMII_API_KEY:}
-      sender-id: ${TERMII_SENDER_ID:CVG FC}
   cors:
     allowed-origins: ${CVG_CORS_ORIGINS:http://localhost:3000,http://localhost:3001,http://localhost:3002}
