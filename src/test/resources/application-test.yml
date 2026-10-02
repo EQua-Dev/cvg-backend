@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${TEST_DATABASE_URL:jdbc:postgresql://localhost:5432/cvg_test}
+    username: ${TEST_DATABASE_USERNAME:cvg}
+    password: ${TEST_DATABASE_PASSWORD:cvg}
+
+cvg:
+  sms:
+    provider: test
+  auth:
+    cookie-secure: false
