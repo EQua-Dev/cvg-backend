@@ -17,7 +17,15 @@ data class CvgProperties(
     val cors: Cors = Cors(),
     val links: Links = Links(),
     val onboarding: Onboarding = Onboarding(),
+    val training: Training = Training(),
 ) {
+    data class Training(
+        /** Players can change their own availability until this long before the start. */
+        val availabilityCutoff: Duration = Duration.ofHours(2),
+        /** How far ahead sessions are created from the weekly schedule. */
+        val daysAhead: Int = 14,
+    )
+
     /** Public URLs of the front ends, used to build links we hand out (WhatsApp, QR codes). */
     data class Links(
         val clubApp: String = "http://localhost:3002",

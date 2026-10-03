@@ -197,7 +197,11 @@ class CollectionService(
      * for the same audience. Safe to run any number of times (one per series per month).
      */
     @Transactional
-    fun rollRecurring(today: LocalDate = today()): Int {
+    fun rollRecurring(): Int = rollRecurring(today())
+
+    // No default argument here: Kotlin evaluates defaults on the Spring proxy, where fields are null.
+    @Transactional
+    fun rollRecurring(today: LocalDate): Int {
         val month = YearMonth.from(today)
         var created = 0
         collections.findByClubIdAndRecurringTrue(clubId)

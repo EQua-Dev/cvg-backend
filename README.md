@@ -142,6 +142,25 @@ Amounts are always **kobo** (`200000` = ₦2,000). The ledger is **append-only**
 | GET | `/api/ledger?month=2026-10` | ADMIN, TREASURER | Entries, money in/out for the month, all-time balance, flagged count |
 | GET | `/api/me/dues` | signed in | Open collections I'm on (owed first) with what I've paid, total owed, and my payment history |
 
+### Training and attendance (M4)
+
+Times are Abuja local. **Everyone is "in" by default.** Players can change their own availability until **2 hours** before the start; coach, captain and admin can change it any time before close. Attendance % = (present + late) ÷ (compulsory sessions − excused); optional sessions only add "extras".
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET / POST | `/api/training/patterns` | GET all, POST ADMIN, COACH | Weekly slots: `weekday (1=Mon…7), startTime "17:30", venue, kind COMPULSORY/OPTIONAL`. Sessions for the next 14 days are created from them (on change and nightly) |
+| DELETE | `/api/training/patterns/{id}` | ADMIN, COACH | Stops the slot; its future unmarked sessions go too |
+| GET | `/api/training/sessions?from=&to=` | signed in | Default: today to 14 days ahead. Each: date, time, venue, kind, focus, status, in/out counts, and `me` (my status, reason, locked, lockAt) |
+| POST | `/api/training/sessions` | ADMIN, COACH | Impromptu: `date, startTime, venue, kind, focus` |
+| GET | `/api/training/sessions/{id}` | signed in | Plus the full `roster` (availability, reason, mark) for coach, captain, admin |
+| PUT | `/api/training/sessions/{id}/focus` · POST `/cancel` | ADMIN, COACH | |
+| PUT | `/api/training/sessions/{id}/availability` | signed in | `{"status":"OUT","reason":"WORK"}` (reasons: INJURED, SICK, TRAVELLING, WORK, FAMILY, OTHER). 409 `availability_locked` after the cutoff |
+| PUT | `/api/training/sessions/{id}/availability/{memberId}` | ADMIN, COACH, CAPTAIN | Any time before close; audited |
+| PUT | `/api/training/sessions/{id}/marks` | ADMIN, COACH, CAPTAIN | `{"marks":[{"memberId","mark":"PRESENT|LATE|ABSENT|EXCUSED|null","markedAt"}]}`. From the session day. Built for offline sync: the newest tap (by `markedAt`) wins. After close only coach/admin, audited |
+| POST | `/api/training/sessions/{id}/close` | ADMIN, COACH, CAPTAIN | Unmarked members become ABSENT |
+| GET | `/api/training/stats` | ADMIN, COACH, CAPTAIN | Per member (active season): percent, streak, present/late/excused/absent, extras, no-shows. Best first |
+| GET | `/api/training/me` | signed in | My stats and last 12 sessions |
+
 ## Layout
 
 ```
@@ -152,6 +171,7 @@ src/main/kotlin/ng/cvgfc/api/
   profiling/ questionnaire scoring
   card/      ID card and public verification
   money/     collections, ledger, monthly dues job
+  training/  schedule, sessions, availability, attendance, stats
   member/    members, roles, first-admin bootstrap
   season/    seasons
   audit/     append-only change log

@@ -54,3 +54,6 @@ cvg:
     verify-secret: ${CVG_VERIFY_SECRET:dev-only-change-me}
   onboarding:
     link-ttl: 14d
+  training:
+    availability-cutoff: 2h
+    days-ahead: 14

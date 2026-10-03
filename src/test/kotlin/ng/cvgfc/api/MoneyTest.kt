@@ -216,6 +216,13 @@ class MoneyTest : IntegrationTest() {
     }
 
     @Test
+    fun `the scheduled job's no-argument entry point works through the Spring proxy`() {
+        newCollection("""{"type":"DUES","amountKobo":200000,"dueDate":"2026-10-28","recurring":true}""")
+        // Regression: a Kotlin default argument here used to be evaluated on the proxy (null clock).
+        tx.execute { collectionService.rollRecurring() }
+    }
+
+    @Test
     fun `naira formatting`() {
         assertEquals("₦2,000", naira(200000))
         assertEquals("₦1,250.50", naira(125050))
