@@ -7,6 +7,16 @@ Built by Devstrike Digital Limited.
 - **Clients:** `cvg-admin` (the Desk), `cvg-players` (the Club), `cvg-public` (the Board), all Next.js
 - **Plan:** [`docs/CONTENT_PLAN.md`](docs/CONTENT_PLAN.md) · [`docs/PROFILING_QUESTIONNAIRE.md`](docs/PROFILING_QUESTIONNAIRE.md)
 
+## Deploy and run with Docker
+
+Railway (API + Postgres), Vercel (web apps), branches and local Docker: see **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+
+Quick local run of the whole system (clone all four repos side by side first):
+
+```bash
+docker compose up --build
+```
+
 ## Run locally
 
 ```bash
@@ -32,7 +42,7 @@ Sign in with the admin phone and the **last 4 digits of that phone** as the pass
 
 | Variable | Default | Notes |
 |---|---|---|
-| `DATABASE_URL` / `DATABASE_USERNAME` / `DATABASE_PASSWORD` | `jdbc:postgresql://localhost:5432/cvg`, `cvg`, `cvg` | |
+| `DATABASE_URL` / `DATABASE_USERNAME` / `DATABASE_PASSWORD` | `jdbc:postgresql://localhost:5432/cvg`, `cvg`, `cvg` | `DATABASE_URL` may also be `postgresql://user:pass@host:port/db` (Railway style); credentials are then taken from it |
 | `CVG_BOOTSTRAP_ADMIN_PHONE` / `CVG_BOOTSTRAP_ADMIN_NAME` | — | Only used while the club has no members |
 | `CVG_COOKIE_DOMAIN` | — | e.g. `.cvgfc.ng`, so the Desk and the Club share the session |
 | `CVG_COOKIE_SECURE` | `true` | Set `false` for plain-HTTP local dev |

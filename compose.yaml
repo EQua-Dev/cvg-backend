@@ -1,0 +1,84 @@
+# Runs the whole of CVG locally: Postgres, the API and the three web apps.
+# Clone all four repos side by side (cvg-backend, cvg-admin, cvg-players, cvg-public), then from here:
+#   docker compose up --build
+# Desk http://localhost:3001 · Club http://localhost:3002 · Public http://localhost:3000 · API http://localhost:8080
+# Only the backend and database:  docker compose up --build db api
+
+name: cvg
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cvg
+      POSTGRES_USER: cvg
+      POSTGRES_PASSWORD: cvg
+    ports:
+      - "5433:5432"   # 5433 on your machine, so a local Postgres on 5432 doesn't clash
+    volumes:
+      - cvg-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cvg -d cvg"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://cvg:cvg@db:5432/cvg
+      CVG_COOKIE_SECURE: "false"
+      CVG_BOOTSTRAP_ADMIN_PHONE: ${CVG_ADMIN_PHONE:-0803 555 0192}
+      CVG_BOOTSTRAP_ADMIN_NAME: ${CVG_ADMIN_NAME:-Club Admin}
+      CVG_VERIFY_SECRET: local-docker-secret
+      CVG_CLUB_APP_URL: http://localhost:3002
+      CVG_PUBLIC_SITE_URL: http://localhost:3000
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
+
+  admin:
+    build:
+      context: ../cvg-admin
+      args:
+        CVG_API_URL: http://api:8080
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+
+  players:
+    build:
+      context: ../cvg-players
+      args:
+        CVG_API_URL: http://api:8080
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3002:3002"
+
+  public:
+    build:
+      context: ../cvg-public
+      args:
+        CVG_API_URL: http://api:8080
+    environment:
+      CVG_API_URL: http://api:8080
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+volumes:
+  cvg-db:

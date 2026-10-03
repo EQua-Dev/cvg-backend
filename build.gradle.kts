@@ -49,6 +49,11 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
+// One runnable jar only (no "-plain" jar), so Docker can copy it without guessing.
+tasks.jar {
+    enabled = false
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
