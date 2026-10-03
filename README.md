@@ -203,6 +203,22 @@ Every active member rates every active member (themselves included) on all 20 at
 
 Selection (M5) now uses each player's card OVR for the slot's position group.
 
+### Profiles, roles and chemistry (M7)
+
+A player's game plan fit (0–100 for each of the 5 plans) blends their questionnaire (35%), their peer attribute ratings mapped per plan (50%) and points per match under that plan (15%, only from 5 matches). Missing sources share out their weight. Role = the coach's call, else the questionnaire's main role, else the squad's vote. Label = strongest plan + role ("Counter-attacking Inside Forward"). Teammates see the label and plan bars; the player, coach, admin and captain also see the breakdown, self vs squad role and disagreements.
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/styles`, `/api/styles/{id}` | signed in | Profiles (detail for staff and yourself) |
+| GET | `/api/styles/me` | signed in | My profile plus `questionnaireDue` |
+| PUT | `/api/styles/{id}/role` | ADMIN, COACH | `{"role":"TGT"}` sets the final role; `null` goes back to the player's own |
+| POST | `/api/styles/rounds` | ADMIN, COACH | Asks everyone to redo the questionnaire |
+| GET / PUT | `/api/ratings/me/{id}/role` | active members | Peer role vote in the open rating window (not for yourself), secret |
+| POST | `/api/chemistry` | ADMIN, COACH, CAPTAIN | `{"teamSize","formation","plan?","slots":[{"idx","memberId"}]}` → links between neighbouring spots (and team-wide rules), green − red + players fitting the plan (70+) |
+| GET / POST / DELETE | `/api/chemistry/rules[/{id}]` | staff / ADMIN, COACH | Rules: roles or a whole group (`DEF*`), GREEN/AMBER/RED, NEIGHBOURS or TEAM, optional plan and "unless" role. Starts with the 16 from the plan |
+
+Selection (M5) now uses the blended plan fit, so Plan B bench ranking and plan scores improve as ratings and results come in.
+
 ## Layout
 
 ```
@@ -214,6 +230,7 @@ src/main/kotlin/ng/cvgfc/api/
   card/      ID card and public verification
   money/     collections, ledger, monthly dues job
   training/  schedule, sessions, availability, attendance, stats
+  style/     player profiles, role votes, final roles, chemistry
   rating/    rating windows, peer ratings, card maths, FUT cards
   match/     fixtures, formations, assisted selection, lineup, result, POTM, opinions, records
   member/    members, roles, first-admin bootstrap

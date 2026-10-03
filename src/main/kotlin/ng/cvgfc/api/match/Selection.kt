@@ -6,7 +6,6 @@ import ng.cvgfc.api.member.MemberRepository
 import ng.cvgfc.api.money.CollectionService
 import ng.cvgfc.api.profile.MemberProfileRepository
 import ng.cvgfc.api.profile.Position
-import ng.cvgfc.api.profiling.ProfilingResponseRepository
 import ng.cvgfc.api.training.Availability
 import ng.cvgfc.api.training.AttendanceMarkRepository
 import ng.cvgfc.api.training.Mark
@@ -82,11 +81,11 @@ class SelectionService(
     private val votes: PotmVoteRepository,
     private val members: MemberRepository,
     private val profiles: MemberProfileRepository,
-    private val profiling: ProfilingResponseRepository,
     private val sessions: TrainingSessionRepository,
     private val marks: AttendanceMarkRepository,
     private val collections: CollectionService,
     private val cards: ng.cvgfc.api.rating.CardService,
+    private val styleService: ng.cvgfc.api.style.StyleService,
     private val properties: CvgProperties,
 ) {
     @Transactional
@@ -110,7 +109,7 @@ class SelectionService(
         val ids = people.map { it.id }
         val outs = availability.findByIdMatchId(m.id).filter { it.status == Availability.OUT }.map { it.id.memberId }.toSet()
         val profileMap = profiles.findAllById(ids).associateBy { it.memberId }
-        val styles = ids.associateWith { profiling.findFirstByMemberIdOrderBySubmittedAtDesc(it)?.result }
+        val styles = styleService.styles(ids)
         val attendance = attendance(ids)
         val form = form(m.id, ids)
         val overdue = collections.overdueMemberIds()
@@ -130,7 +129,7 @@ class SelectionService(
         val candidates = people.map { p ->
             val profile = profileMap[p.id]
             val style = styles[p.id]
-            fun planFit(plan: GamePlan?) = plan?.let { style?.planFits?.get(it.name) }
+            fun planFit(plan: GamePlan?) = plan?.let { pl -> style?.planFits?.firstOrNull { it.code == pl.name }?.fit }
             val att = attendance[p.id]
             val f = form[p.id]
             val factors = mapOf(

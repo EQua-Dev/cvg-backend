@@ -40,6 +40,22 @@ object Formations {
 
     fun default(size: Int): Formation = forSize(size).first()
 
+    /**
+     * Spots that play next to each other: side by side in a line, or in the next line up/down
+     * and roughly in front/behind (less than 30% of the pitch width apart).
+     */
+    fun neighbours(f: Formation): List<Pair<Int, Int>> {
+        val rows = f.slots.groupBy { it.y }.toSortedMap(compareByDescending { it }).values.map { r -> r.sortedBy { it.x } }
+        val pairs = mutableListOf<Pair<Int, Int>>()
+        rows.forEachIndexed { i, row ->
+            row.zipWithNext { a, b -> pairs += a.idx to b.idx }
+            rows.getOrNull(i + 1)?.let { next ->
+                for (a in row) for (b in next) if (kotlin.math.abs(a.x - b.x) < 30) pairs += a.idx to b.idx
+            }
+        }
+        return pairs
+    }
+
     /** Bench spots allowed for each format. */
     fun benchSize(size: Int) = when (size) {
         11 -> 7

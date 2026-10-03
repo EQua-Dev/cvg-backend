@@ -167,6 +167,10 @@ class CardService(
         return latestByMember(memberIds).mapValues { (_, c) -> c.groupOvrs(s) }
     }
 
+    /** Latest attribute stats (30–99) per player, for game plan fit. */
+    @Transactional(readOnly = true)
+    fun latestStats(memberIds: Collection<UUID>): Map<UUID, Map<String, Int>> = latestByMember(memberIds).mapValues { it.value.stats }
+
     /** Public site: published cards of members who agreed to be shown. */
     @Transactional(readOnly = true)
     fun publicSquad(): List<PublicCard> {
