@@ -104,7 +104,7 @@ class MatchTest : IntegrationTest() {
 
         val sel = parse(mvc.perform(get("/api/matches/$id/selection?formation=2-1-1").bearer(coach)).andReturn().response.contentAsString)
         assertEquals("2-1-1", sel["formation"]["name"].asText())
-        assertEquals(listOf("OVR", "PLAN"), sel["unavailableFactors"].map { it.asText() }, "no ratings yet, no game plan set")
+        assertEquals(listOf("OVR", "FORM", "ATTENDANCE", "PLAN"), sel["unavailableFactors"].map { it.asText() }, "no ratings, matches or training yet; no game plan set")
         val weights = sel["weights"]
         assertTrue((98..102).contains(weights.fields().asSequence().sumOf { it.value.asInt() }))
 

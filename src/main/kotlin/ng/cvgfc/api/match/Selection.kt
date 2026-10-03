@@ -112,13 +112,16 @@ class SelectionService(
         val form = form(m.id, ids)
         val overdue = collections.overdueMemberIds()
 
-        val unavailable = buildList {
-            add(Factor.OVR)
-            if (m.gamePlan == null) add(Factor.PLAN)
-        }
-        val weights = share(configured, unavailable)
-        val planBWeights = share(configured, listOf(Factor.OVR))
         val maxForm = form.values.maxOfOrNull { it.points } ?: 0.0
+        // A factor nobody has data for yet (no ratings, no matches played, no training marked) is set aside.
+        val noData = buildList {
+            add(Factor.OVR)
+            if (maxForm == 0.0) add(Factor.FORM)
+            if (attendance.values.all { it == null }) add(Factor.ATTENDANCE)
+        }
+        val unavailable = noData + listOfNotNull(Factor.PLAN.takeIf { m.gamePlan == null })
+        val weights = share(configured, unavailable)
+        val planBWeights = share(configured, noData)
 
         val candidates = people.map { p ->
             val profile = profileMap[p.id]
