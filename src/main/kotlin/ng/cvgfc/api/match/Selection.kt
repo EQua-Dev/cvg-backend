@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 /** What the selection score is made of. Weights are percentages and can be changed per match. */
 enum class Factor(val defaultWeight: Int) {
     POSITION(25),
-    /** Group OVR from peer ratings. Arrives with the FUT cards; until then its weight is shared out. */
+    /** Group OVR for the slot's position group, from the latest FUT card. Shared out until anyone has a card. */
     OVR(25),
     PLAN(20),
     ATTENDANCE(15),
@@ -50,6 +50,8 @@ data class Candidate(
     val assists: Int,
     val potmVotes: Int,
     val attendancePercent: Int?,
+    /** Latest card OVR per position group. */
+    val ovrs: Map<ng.cvgfc.api.profile.PositionGroup, Int?>,
 )
 
 data class SelectionView(
@@ -84,6 +86,7 @@ class SelectionService(
     private val sessions: TrainingSessionRepository,
     private val marks: AttendanceMarkRepository,
     private val collections: CollectionService,
+    private val cards: ng.cvgfc.api.rating.CardService,
     private val properties: CvgProperties,
 ) {
     @Transactional
@@ -112,10 +115,11 @@ class SelectionService(
         val form = form(m.id, ids)
         val overdue = collections.overdueMemberIds()
 
+        val ovrs = cards.groupOvrs(ids)
         val maxForm = form.values.maxOfOrNull { it.points } ?: 0.0
         // A factor nobody has data for yet (no ratings, no matches played, no training marked) is set aside.
         val noData = buildList {
-            add(Factor.OVR)
+            if (ovrs.values.all { g -> g.values.all { it == null } }) add(Factor.OVR)
             if (maxForm == 0.0) add(Factor.FORM)
             if (attendance.values.all { it == null }) add(Factor.ATTENDANCE)
         }
@@ -137,7 +141,11 @@ class SelectionService(
                 Factor.DUES to if (p.id in overdue) 0 else 100,
             )
             fun score(slot: FormationSlot, w: Map<Factor, Int>, plan: Int?): Int {
-                val values = factors + mapOf(Factor.POSITION to positionFit(slot.position, profile?.favouredPosition, profile?.otherPositions.orEmpty()), Factor.PLAN to plan)
+                val values = factors + mapOf(
+                    Factor.POSITION to positionFit(slot.position, profile?.favouredPosition, profile?.otherPositions.orEmpty()),
+                    Factor.PLAN to plan,
+                    Factor.OVR to ovrs[p.id]?.get(slot.position.group)?.let(::ovrScore),
+                )
                 // Missing data counts as middling, so nobody gains from not filling things in.
                 val total = w.entries.sumOf { (factor, weight) -> (values[factor] ?: NEUTRAL) * weight }
                 return (total.toDouble() / w.values.sum().coerceAtLeast(1)).roundToInt()
@@ -159,6 +167,7 @@ class SelectionService(
                 assists = f?.assists ?: 0,
                 potmVotes = f?.votes ?: 0,
                 attendancePercent = att,
+                ovrs = ovrs[p.id].orEmpty(),
             )
         }
 
@@ -235,6 +244,9 @@ class SelectionService(
 
     companion object {
         private const val NEUTRAL = 50
+
+        /** Card OVR 30–99 on the 0–100 selection scale. */
+        fun ovrScore(ovr: Int): Int = ((ovr - 30) * 100.0 / 69).roundToInt().coerceIn(0, 100)
 
         /** Favoured spot 100, listed other positions 70, same line 50, anything else 30. */
         fun positionFit(slot: Position, favoured: Position?, others: List<String>): Int = when {

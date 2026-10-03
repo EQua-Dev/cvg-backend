@@ -186,6 +186,23 @@ Availability works like training: everyone is in unless they say out (with a rea
 | GET | `/api/matches/me/record`, `/api/matches/record/{memberId}` | signed in / staff | Played, started, goals, assists, POTM, clean sheets, recent matches |
 | GET | `/api/public/matches` | public | Next fixture and last 10 results (scorers and POTM by nickname or first name) |
 
+### Ratings and FUT cards (M6)
+
+Every active member rates every active member (themselves included) on all 20 attributes with a 5-step scale (2/4/6/8/10) or "don't know" (0). Answers save as you go and are never shown with the rater. When a window closes, each attribute becomes a card stat: peer scores (top/bottom 10% dropped from 8 scores up) averaged with the player's own at half weight, ×10, clamped 30–99. The card shows the 6 stats of the player's position group; OVR = their average; published only if each has 5+ peer ratings. Tiers: Bronze < 65, Silver 65–74, Gold 75–84, CVG Elite 85+.
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET / POST | `/api/ratings/windows` | ADMIN, COACH | List with completion (`finished` of `raters`) / open `{"title?","days":7}`; one at a time; titled "Season · Round N" |
+| POST | `/api/ratings/windows/{id}/close` | ADMIN, COACH | Works out the cards. Windows also close themselves at their end date (checked every 15 min) |
+| GET / PUT | `/api/ratings/stat-sets[/{group}]` | signed in / ADMIN, COACH | The 6 card stats per group and the 20 attributes. Changing a set needs no re-vote |
+| GET | `/api/ratings/me` | signed in | Open window and everyone to rate with progress; 204 when none is open |
+| GET / PUT | `/api/ratings/me/{memberId}` | active members | One player's sheet (their group's block first; last round's answers pre-filled) / save `{"scores":{"PAC":8,"REF":0}}` |
+| GET | `/api/cards/me` | signed in | Latest card with my self-rating per stat, plus history |
+| GET | `/api/cards`, `/api/cards/{memberId}` | signed in | Squad cards (numbers only when published), all four group cards, best-fit group |
+| GET | `/api/public/squad`, `/api/public/squad/{id}/photo` | public | Published cards of members who agreed to be shown |
+
+Selection (M5) now uses each player's card OVR for the slot's position group.
+
 ## Layout
 
 ```
@@ -197,6 +214,7 @@ src/main/kotlin/ng/cvgfc/api/
   card/      ID card and public verification
   money/     collections, ledger, monthly dues job
   training/  schedule, sessions, availability, attendance, stats
+  rating/    rating windows, peer ratings, card maths, FUT cards
   match/     fixtures, formations, assisted selection, lineup, result, POTM, opinions, records
   member/    members, roles, first-admin bootstrap
   season/    seasons
