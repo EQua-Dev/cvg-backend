@@ -34,7 +34,7 @@ abstract class IntegrationTest {
     @BeforeEach
     fun cleanDatabase() {
         jdbc.execute(
-            "TRUNCATE audit_event, auth_session, season, member_role, member, onboarding_link, " +
+            "TRUNCATE potm_vote, match_opinion, match_card, match_goal, match_appearance, lineup_slot, match_availability, match, audit_event, auth_session, season, member_role, member, onboarding_link, " +
                 "member_profile, media_asset, profiling_response, ledger_receipt, ledger_entry, collection_member, collection, " +
                 "attendance_mark, session_availability, training_session, training_pattern CASCADE",
         )

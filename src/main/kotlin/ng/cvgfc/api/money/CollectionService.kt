@@ -192,6 +192,18 @@ class CollectionService(
         return MyDues(items.sumOf { it.owedKobo }, items, history)
     }
 
+    /** Members who still owe on an open collection that is past its due date. */
+    @Transactional(readOnly = true)
+    fun overdueMemberIds(): Set<UUID> {
+        val overdue = collections.findByClubIdOrderByDueDateDescCreatedAtDesc(clubId).filter { it.isOpen && it.dueDate.isBefore(today()) }
+        if (overdue.isEmpty()) return emptySet()
+        val byCollection = entries.findByCollectionIdIn(overdue.map { it.id }).groupBy { it.collectionId!! }
+        return overdue.flatMap { c ->
+            val paid = paidByMember(byCollection[c.id].orEmpty())
+            collectionMembers.memberIds(c.id).filter { (paid[it] ?: 0) < c.amountKobo }
+        }.toSet()
+    }
+
     /**
      * On the 1st of each month, each monthly-dues series gets a new collection for that month,
      * for the same audience. Safe to run any number of times (one per series per month).

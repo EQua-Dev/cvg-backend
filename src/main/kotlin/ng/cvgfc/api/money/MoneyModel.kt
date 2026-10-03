@@ -29,7 +29,7 @@ enum class Category(val label: String, val collectable: Boolean = false, val exp
     FIELD_RENTAL("Field rental", expense = true),
     EQUIPMENT("Equipment", expense = true),
     TRANSPORT("Transport", expense = true),
-    MATCH_FEE("Match / referee fee", expense = true),
+    MATCH_FEE("Match / referee fee", collectable = true, expense = true),
     OTHER("Other", collectable = true, expense = true),
 }
 

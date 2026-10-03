@@ -161,6 +161,31 @@ Times are Abuja local. **Everyone is "in" by default.** Players can change their
 | GET | `/api/training/stats` | ADMIN, COACH, CAPTAIN | Per member (active season): percent, streak, present/late/excused/absent, extras, no-shows. Best first |
 | GET | `/api/training/me` | signed in | My stats and last 12 sessions |
 
+### Matches (M5)
+
+Availability works like training: everyone is in unless they say out (with a reason), locked 2h before kickoff.
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/matches/options` | signed in | Formation templates (slots with x/y pitch positions), game plans, past opponents and venues, opinion tags |
+| GET | `/api/matches?when=upcoming|past` | signed in | Fixtures with in/out counts, my availability, my lineup spot once published, vote/opinion flags |
+| POST | `/api/matches` | ADMIN, COACH | `{"opponent","date","kickoff","meetTime?","venue","side":"HOME|AWAY|NEUTRAL","type":"FRIENDLY|TOURNAMENT|LEAGUE|INTERNAL","teamSize":5|7|9|11,"gamePlan?","planB?","kit?","feeKobo?","notes?"}` |
+| GET / PUT | `/api/matches/{id}` | signed in / ADMIN, COACH | Detail: match, lineup (staff always; players once published), result, POTM, opinions |
+| POST | `/api/matches/{id}/cancel` | ADMIN, COACH | |
+| PUT | `/api/matches/{id}/availability` | signed in | `{"status":"IN|OUT","reason"}` for myself, before the cutoff |
+| GET | `/api/matches/{id}/squad` | ADMIN, COACH, CAPTAIN | Everyone with position and in/out |
+| PUT | `/api/matches/{id}/availability/{memberId}` | ADMIN, COACH, CAPTAIN | Audited |
+| GET | `/api/matches/{id}/selection?formation=4-3-3` | ADMIN, COACH, CAPTAIN | Every player scored 0–100 for every spot (position fit, game plan fit, attendance over the last 8 compulsory sessions, form over the last 5 matches, dues). Factors with no data yet (OVR until M6, plan fit when no plan) are dropped and the rest scaled to 100. Includes an auto-filled XI and a bench (ranked by Plan B when set) |
+| PUT | `/api/matches/{id}/weights` | ADMIN, COACH | `{"weights":{"POSITION":30,...}}` for this match |
+| PUT | `/api/matches/{id}/lineup` | ADMIN, COACH | `{"formation","slots":[{"idx","memberId"|"guestName"}],"captainId","penaltyTakerId","freeKickTakerId","cornerTakerId"}`. Pitch slots are 0..n-1, bench 100+ |
+| POST | `/api/matches/{id}/lineup/publish` | ADMIN, COACH | Every pitch spot must be filled. Re-saving after publishing updates what players see |
+| PUT | `/api/matches/{id}/result` | ADMIN, COACH | `{"ourScore","theirScore","appearances":[{"memberId"|"guestName","started","position"}],"goals":[{"scorerId"|"scorerGuest"|"ownGoal":true,"assistId?","minute?","kind?"}],"cards":[...]}`. From match day. One goal row per CVG goal. First save opens a 48h POTM vote and, if there is a fee, a match-fee collection for everyone who played. Corrections are audited |
+| POST | `/api/matches/{id}/potm/vote` | matchday squad | `{"nomineeId"}`: someone who played, not yourself. Can change until it closes. Anonymous; totals only after closing; ties are joint |
+| POST | `/api/matches/{id}/potm/close` | ADMIN, COACH | Close early |
+| PUT | `/api/matches/{id}/opinion` | matchday squad | `{"commendTags":[≤3],"commendText?","critiqueTags":[≤3],"critiqueText?","selfRating?":1-10}`. Anonymous to players; admin and coach see names |
+| GET | `/api/matches/me/record`, `/api/matches/record/{memberId}` | signed in / staff | Played, started, goals, assists, POTM, clean sheets, recent matches |
+| GET | `/api/public/matches` | public | Next fixture and last 10 results (scorers and POTM by nickname or first name) |
+
 ## Layout
 
 ```
@@ -172,6 +197,7 @@ src/main/kotlin/ng/cvgfc/api/
   card/      ID card and public verification
   money/     collections, ledger, monthly dues job
   training/  schedule, sessions, availability, attendance, stats
+  match/     fixtures, formations, assisted selection, lineup, result, POTM, opinions, records
   member/    members, roles, first-admin bootstrap
   season/    seasons
   audit/     append-only change log
