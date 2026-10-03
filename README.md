@@ -123,6 +123,25 @@ The questions and their scoring live in `src/main/resources/profiling/questionna
 | GET | `/api/public/verify/{code}/{signature}` | anyone | Name, member ID, status, current yes/no, season. Photo and position only with the member's consent |
 | GET | `/api/public/verify/{code}/{signature}/photo` | anyone | Only with consent |
 
+### Money (M3)
+
+Amounts are always **kobo** (`200000` = ₦2,000). The ledger is **append-only**: Postgres triggers refuse any `UPDATE` or `DELETE` on `ledger_entry` and `ledger_receipt`. A mistake is fixed by a reversal entry that points at the original. Every money action goes in the audit log.
+
+| Method | Path | Who | Notes |
+|---|---|---|---|
+| GET | `/api/money/categories` | ADMIN, TREASURER | Category codes and labels, with which can be collected and which are expenses |
+| GET | `/api/collections?open=true` | ADMIN, TREASURER | Each with member count, paid/partial counts, expected and collected |
+| POST | `/api/collections` | ADMIN, TREASURER | `title, type, amountKobo, dueDate, audience (ACTIVE / ACTIVE_AND_TRIALISTS / SELECTED + memberIds), recurring`. `recurring` is for monthly dues only: titled "October 2026 dues" and created again automatically on the 1st of each month (00:10 Abuja time) for the same audience |
+| GET | `/api/collections/{id}` | ADMIN, TREASURER | Everyone on it: paid, owed, `PAID / PARTIAL / UNPAID` (unpaid first) |
+| PUT | `/api/collections/{id}/members` | ADMIN, TREASURER | Replace who owes. People who already paid can't be removed |
+| POST | `/api/collections/{id}/close` | ADMIN, TREASURER | No more payments against it |
+| POST | `/api/ledger/payments` | ADMIN, TREASURER | Money in: `memberId, collectionId?, category? (if no collection), amountKobo, method (CASH/TRANSFER/POS), occurredOn?, note?`. Paying a collection you weren't on adds you to it |
+| POST | `/api/ledger/expenses` | ADMIN, TREASURER | Money out: `category, amountKobo, method, occurredOn?, note` (note required) |
+| POST | `/api/ledger/{id}/reverse` | ADMIN, TREASURER | `{"reason":"…"}`. Once per entry; corrections can't be reversed |
+| PUT / GET | `/api/ledger/{id}/receipt` | ADMIN, TREASURER (GET also the member it's about) | Photo of a receipt. Expenses without one are `flagged` |
+| GET | `/api/ledger?month=2026-10` | ADMIN, TREASURER | Entries, money in/out for the month, all-time balance, flagged count |
+| GET | `/api/me/dues` | signed in | Open collections I'm on (owed first) with what I've paid, total owed, and my payment history |
+
 ## Layout
 
 ```
@@ -132,6 +151,7 @@ src/main/kotlin/ng/cvgfc/api/
   profile/   player profile, photos, pick lists
   profiling/ questionnaire scoring
   card/      ID card and public verification
+  money/     collections, ledger, monthly dues job
   member/    members, roles, first-admin bootstrap
   season/    seasons
   audit/     append-only change log

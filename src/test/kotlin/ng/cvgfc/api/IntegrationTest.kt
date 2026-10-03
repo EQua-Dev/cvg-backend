@@ -35,7 +35,7 @@ abstract class IntegrationTest {
     fun cleanDatabase() {
         jdbc.execute(
             "TRUNCATE audit_event, auth_session, season, member_role, member, onboarding_link, " +
-                "member_profile, media_asset, profiling_response CASCADE",
+                "member_profile, media_asset, profiling_response, ledger_receipt, ledger_entry, collection_member, collection CASCADE",
         )
     }
 
