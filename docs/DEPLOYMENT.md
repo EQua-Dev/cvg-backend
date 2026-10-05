@@ -84,7 +84,7 @@ The first build takes a few minutes. Then open:
 | The Club (players) | http://localhost:3002 |
 | The Board (public) | http://localhost:3000 |
 | API health | http://localhost:8080/actuator/health |
-| Postgres | `localhost:5433`, database/user/password `cvg` |
+| Postgres (for a DB tool) | `localhost:55432`, database/user/password `cvg` |
 
 Sign in to the Desk with **0803 555 0192** and passcode **0192** (the last 4 digits). To use your own number:
 
@@ -103,5 +103,21 @@ docker compose up --build db api      # only the database and API (run the web a
 docker compose down                   # stop, keep the data
 docker compose down -v                # stop and wipe the database
 ```
+
+**"Port is already allocated"?** Something on your machine already uses that port. Either stop it (`lsof -nP -iTCP:<port> -sTCP:LISTEN` shows what), or move CVG to another port, then run `docker compose down` and start again:
+
+```bash
+CVG_DB_PORT=55433 CVG_DESK_PORT=4001 docker compose up --build
+```
+
+| Variable | Default |
+|---|---|
+| `CVG_DB_PORT` | 55432 |
+| `CVG_API_PORT` | 8080 |
+| `CVG_DESK_PORT` | 3001 |
+| `CVG_CLUB_PORT` | 3002 |
+| `CVG_PUBLIC_PORT` | 3000 |
+
+If you move the Club or public site, WhatsApp join links and ID-card QR codes will still point at 3002 and 3000. That's fine for testing on your computer.
 
 To test on your phone over Wi-Fi, open `http://<your-computer's-IP>:3002`.

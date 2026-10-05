@@ -3,6 +3,8 @@
 #   docker compose up --build
 # Desk http://localhost:3001 · Club http://localhost:3002 · Public http://localhost:3000 · API http://localhost:8080
 # Only the backend and database:  docker compose up --build db api
+# A port already taken on your machine? Pick another, e.g.  CVG_DESK_PORT=4001 docker compose up --build
+#   (CVG_DB_PORT, CVG_API_PORT, CVG_DESK_PORT, CVG_CLUB_PORT, CVG_PUBLIC_PORT)
 
 name: cvg
 
@@ -14,7 +16,8 @@ services:
       POSTGRES_USER: cvg
       POSTGRES_PASSWORD: cvg
     ports:
-      - "5433:5432"   # 5433 on your machine, so a local Postgres on 5432 doesn't clash
+      # Only for connecting a DB tool from your machine; the API talks to Postgres inside Docker.
+      - "${CVG_DB_PORT:-55432}:5432"
     volumes:
       - cvg-db:/var/lib/postgresql/data
     healthcheck:
@@ -37,7 +40,7 @@ services:
       CVG_CLUB_APP_URL: http://localhost:3002
       CVG_PUBLIC_SITE_URL: http://localhost:3000
     ports:
-      - "8080:8080"
+      - "${CVG_API_PORT:-8080}:8080"
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
       interval: 5s
@@ -54,7 +57,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - "3001:3001"
+      - "${CVG_DESK_PORT:-3001}:3001"
 
   players:
     build:
@@ -65,7 +68,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - "3002:3002"
+      - "${CVG_CLUB_PORT:-3002}:3002"
 
   public:
     build:
@@ -78,7 +81,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${CVG_PUBLIC_PORT:-3000}:3000"
 
 volumes:
   cvg-db:
